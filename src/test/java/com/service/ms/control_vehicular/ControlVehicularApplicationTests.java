@@ -1,4 +1,4 @@
-package com.service.ms.control_vehicular.control_vehicular;
+package com.service.ms.control_vehicular;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

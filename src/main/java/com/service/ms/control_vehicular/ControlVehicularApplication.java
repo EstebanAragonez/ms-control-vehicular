@@ -1,4 +1,4 @@
-package com.service.ms.control_vehicular.control_vehicular;
+package com.service.ms.control_vehicular;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
