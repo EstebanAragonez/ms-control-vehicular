@@ -10,7 +10,7 @@
             <column name="id_rol" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nombre_rol" type="varchar(50)">
+            <column name="name_rol" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -18,22 +18,28 @@
 
     <!-- Tabla usuario (corregido tipo de id_rol y nombre de columna) -->
     <changeSet id="2" author="Leonardo Aragonez">
-        <createTable tableName="usuario">
-            <column name="id_usuario" type="bigserial">
+        <createTable tableName="users">
+            <column name="id_user" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nombre" type="varchar(100)">
+            <column name="name" type="varchar(100)">
                 <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cedula" type="varchar(20)">
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="email" type="varchar(100)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="contrasena" type="varchar(255)"> <!-- Corregido nombre -->
+            <column name="password" type="varchar(255)"> <!-- Corregido nombre -->
                 <constraints nullable="false"/>
             </column>
             <column name="id_rol" type="bigint"> <!-- Corregido tipo -->
                 <constraints nullable="false"
-                             foreignKeyName="fk_usuario_rol"
+                             foreignKeyName="fk_user_rol"
                              references="rol(id_rol)"/>
             </column>
         </createTable>
@@ -41,55 +47,54 @@
 
     <!-- Tabla vehiculo (corregido tipo de id_usuario) -->
     <changeSet id="3" author="Leonardo Aragonez">
-        <createTable tableName="vehiculo">
-            <column name="id_vehiculo" type="bigserial">
+        <createTable tableName="vehicle">
+            <column name="id_vehicle" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="placa" type="varchar(10)">
+            <column name="plate" type="varchar(10)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="tipo" type="varchar(20)">
+            <column name="type" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="marca" type="varchar(50)">
+            <column name="trademark" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="modelo" type="varchar(50)">
+            <column name="model" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="fecha_venc_soat" type="date">
+            <column name="soat_expi_date" type="date">
                 <constraints nullable="false"/>
             </column>
-            <column name="fecha_venc_tecnomecanica" type="date">
+            <column name="tech_mecha_expi_date" type="date">
                 <constraints nullable="false"/>
             </column>
             <column name="color" type="varchar(30)">
                 <constraints nullable="false"/>
             </column>
-            <column name="id_usuario" type="bigint"> <!-- Corregido tipo -->
+            <column name="id_user" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_vehiculo_usuario"
-                             references="usuario(id_usuario)"/>
+                             foreignKeyName="fk_vehicle_user"
+                             references="users(id_user)"/>
             </column>
         </createTable>
     </changeSet>
 
-    <!-- Tabla registro_ingreso (corregido tipo de id_vehiculo) -->
     <changeSet id="4" author="Leonardo Aragonez">
-        <createTable tableName="registro_ingreso">
-            <column name="id_registro" type="bigserial">
+        <createTable tableName="entry_registration">
+            <column name="id_registration" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="id_vehiculo" type="bigint"> <!-- Corregido tipo -->
+            <column name="id_vehicle" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_registro_vehiculo"
-                             references="vehiculo(id_vehiculo)"/>
+                             foreignKeyName="fk_record_vehicle"
+                             references="vehicle(id_vehicle)"/>
             </column>
-            <column name="fecha_hora_entrada" type="timestamptz">
+            <column name="date_time_entry" type="timestamptz">
                 <constraints nullable="false"/>
             </column>
-            <column name="fecha_hora_salida" type="timestamptz"/>
-            <column name="observaciones" type="text"/>
+            <column name="date_time_departure" type="timestamptz"/>
+            <column name="observations" type="text"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -1,10 +1,10 @@
-package co.com.apicontrolvehicular;
+package com.apivehicular;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiControlVehicularApplicationTests {
+class ApiVehicularApplicationTests {
 
     @Test
     void contextLoads() {
