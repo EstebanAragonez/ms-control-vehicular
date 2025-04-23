@@ -1,6 +1,5 @@
 package com.apivehicular.domain.service;
 
-import com.apivehicular.domain.model.Rol;
 import com.apivehicular.domain.model.User;
 import com.apivehicular.domain.model.Vehicle;
 import com.apivehicular.domain.repository.RolRepository;
@@ -8,13 +7,13 @@ import com.apivehicular.domain.repository.UserRepository;
 import com.apivehicular.domain.repository.VehicleRepository;
 import com.apivehicular.presentation.dto.request.UserWithVehiclesRequest;
 import com.apivehicular.presentation.dto.request.VehicleRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -59,34 +58,28 @@ public class UserService {
                 .flatMap(user -> userRepository.deleteById(id));
     }
 
-
     public Mono<User> createUserWithVehicles(UserWithVehiclesRequest request) {
 
-        Mono<Rol> roleMono = rolRepository.findById(request.getIdRol());
+        return rolRepository.findById(request.getIdRol())
+                .flatMap(role -> {
+                    User user = User.builder()
+                            .name(request.getName())
+                            .lastName(request.getLastName())
+                            .cedula(request.getCedula())
+                            .email(request.getEmail())
+                            .password(passwordEncoder.encode(request.getPassword()))
+                            .rol(role)
+                            .build();
 
-        return roleMono.flatMap(role -> {
-
-            User user = User.builder()
-                    .name(request.getName())
-                    .lastName(request.getLastName())
-                    .cedula(request.getCedula())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword())) // Encriptamos la contraseña
-                    .rol(role)
-                    .build();
-
-            return userRepository.save(user).flatMap(savedUser -> {
-
-                return Mono.just(savedUser)
-                        .flatMap(user1 -> {
-                            return Mono.when(
-                                    request.getVehicles().stream()
-                                            .map(vehicleRequest -> saveVehicle(vehicleRequest, user1))
-                                            .toArray(Mono[]::new) // Transforma la lista de vehículos en un array de Monos
-                            ).thenReturn(user1); // Devolvemos el usuario
-                        });
-            });
-        });
+                    return userRepository.save(user)
+                            .flatMap(savedUser ->
+                                    Mono.when(
+                                            request.getVehicles().stream()
+                                                    .map(vehicleRequest -> saveVehicle(vehicleRequest, savedUser))
+                                                    .toArray(Mono[]::new)
+                                    ).thenReturn(savedUser)
+                            );
+                });
     }
 
     private Mono<Vehicle> saveVehicle(VehicleRequest vehicleRequest, User user) {
@@ -95,12 +88,12 @@ public class UserService {
                 .type(vehicleRequest.getType())
                 .trademark(vehicleRequest.getTrademark())
                 .model(vehicleRequest.getModel())
-                .soatExpiDate(LocalDateTime.parse(vehicleRequest.getSoatExpiDate()))  // Conversión a LocalDateTime
-                .techMechaExpiDate(LocalDateTime.parse(vehicleRequest.getTechMechaExpiDate())) // Conversión a LocalDateTime
+                .soatExpiDate(LocalDate.parse(vehicleRequest.getSoatExpiDate()))
+                .techMechaExpiDate(LocalDate.parse(vehicleRequest.getTechMechaExpiDate()))
                 .color(vehicleRequest.getColor())
-                .user(user) // Asocia el usuario al vehículo
+                .user(user)
                 .build();
 
-        return vehicleRepository.save(vehicle); // Guarda el vehículo en la base de datos
+        return vehicleRepository.save(vehicle);
     }
 }

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,8 +17,8 @@ public class Vehicle {
     private String type;
     private String trademark;
     private String model;
-    private LocalDateTime soatExpiDate;
-    private LocalDateTime techMechaExpiDate;
+    private LocalDate soatExpiDate;
+    private LocalDate techMechaExpiDate;
     private String color;
     private User user;
 

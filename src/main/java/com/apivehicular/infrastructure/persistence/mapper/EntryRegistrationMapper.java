@@ -16,19 +16,17 @@ public class EntryRegistrationMapper {
     }
 
     public Mono<EntryRegistration> toModel(EntryRegistrationEntity entity) {
-        // Obtenemos el vehículo por su ID
+
         return vehicleService.findById(entity.getVehicleId())
                 .map(vehicle -> EntryRegistration.builder()
                         .id(entity.getId())
-                        .vehicleId(vehicle.getId())  // Asignamos el objeto completo Vehicle
+                        .vehicleId(vehicle.getId())
                         .dateTimeEntry(entity.getDateTimeEntry())
                         .dateTimeDeparture(entity.getDateTimeDeparture())
                         .observations(entity.getObservations())
                         .build());
     }
 
-
-    // Mapea el modelo de dominio a la entidad de la base de datos
     public EntryRegistrationEntity toEntity(EntryRegistration model) {
         return EntryRegistrationEntity.builder()
                 .id(model.getId())

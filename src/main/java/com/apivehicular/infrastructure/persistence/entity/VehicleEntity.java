@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -34,10 +34,10 @@ public class VehicleEntity {
     private String model;
 
     @Column("soat_expi_date")
-    private LocalDateTime soatExpiDate;
+    private LocalDate soatExpiDate;
 
     @Column("tech_mecha_expi_date")
-    private LocalDateTime techMechaExpiDate;
+    private LocalDate techMechaExpiDate;
 
     @Column("color")
     private String color;

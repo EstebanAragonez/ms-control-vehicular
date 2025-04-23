@@ -5,6 +5,7 @@ import com.apivehicular.domain.model.Vehicle;
 import com.apivehicular.domain.service.UserService;
 import com.apivehicular.domain.service.VehicleService;
 import com.apivehicular.presentation.dto.request.VehicleRequest;
+import com.apivehicular.presentation.dto.request.VehicleUserRequest;
 import com.apivehicular.presentation.dto.response.VehicleResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/vehicles")
+@RequestMapping("/api/v1/vehicles")
 @RequiredArgsConstructor
 public class VehicleController {
 
@@ -60,14 +61,23 @@ public class VehicleController {
         return vehicleService.deleteVehicle(id);
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<ResponseEntity<VehicleResponse>> createVehicle(@Valid @RequestBody VehicleUserRequest vehicleUserRequest) {
+        return vehicleService.createVehicleForUser(vehicleUserRequest)
+                .map(this::mapToResponse)
+                .map(ResponseEntity::ok);
+    }
+
+
     private Vehicle mapToModel(VehicleRequest request, User user) {
         return Vehicle.builder()
                 .plate(request.getPlate())
                 .type(request.getType())
                 .trademark(request.getTrademark())
                 .model(request.getModel())
-                .soatExpiDate(LocalDateTime.parse(request.getSoatExpiDate().split("T")[0]))
-                .techMechaExpiDate(LocalDateTime.parse(request.getTechMechaExpiDate().split("T")[0]))
+                .soatExpiDate(LocalDate.parse(request.getSoatExpiDate().split("T")[0]))
+                .techMechaExpiDate(LocalDate.parse(request.getTechMechaExpiDate().split("T")[0]))
                 .color(request.getColor())
                 .user(user)
                 .build();
