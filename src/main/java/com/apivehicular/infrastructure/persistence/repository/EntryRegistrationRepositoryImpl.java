@@ -53,4 +53,15 @@ public class EntryRegistrationRepositoryImpl implements EntryRegistrationReposit
     public Mono<Void> deleteById(Long id) {
         return r2dbcEntryRegistrationRepository.deleteById(id);
     }
+
+    @Override
+    public Mono<EntryRegistration> findLatestByVehicleIdAndDateRange(
+            Long vehicleId,
+            LocalDateTime start,
+            LocalDateTime end) {
+
+        return r2dbcEntryRegistrationRepository
+                .findLatestByVehicleIdAndDateRange(vehicleId, start, end)
+                .flatMap(entryRegistrationMapper::toModel);
+    }
 }
