@@ -2,6 +2,7 @@ package com.apivehicular.domain.service;
 
 import com.apivehicular.domain.exception.VehicleNotFoundException;
 import com.apivehicular.domain.model.EntryRegistration;
+import com.apivehicular.domain.model.EntryRegistrationDetail;
 import com.apivehicular.domain.repository.EntryRegistrationRepository;
 import com.apivehicular.domain.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,8 @@ public class EntryRegistrationService {
 
     private final EntryRegistrationRepository entryRegistrationRepository;
     private final VehicleRepository vehicleRepository;
+    private final VehicleService vehicleService;
+    private final UserService userService;
 
     public Mono<EntryRegistration> findById(Long id) {
         return entryRegistrationRepository.findById(id)
@@ -81,4 +86,31 @@ public class EntryRegistrationService {
                         .build()
         );
     }
+
+    public Flux<EntryRegistrationDetail> findAllWithDetails() {
+        return entryRegistrationRepository.findAll()
+                .flatMap(this::enrichWithVehicleAndUserInfo);
+    }
+
+    public Flux<EntryRegistrationDetail> findAllTodayWithDetails() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        return entryRegistrationRepository.findByDateTimeEntryBetween(startOfDay, endOfDay)
+                .flatMap(this::enrichWithVehicleAndUserInfo);
+    }
+
+    private Mono<EntryRegistrationDetail> enrichWithVehicleAndUserInfo(EntryRegistration entryRegistration) {
+        return vehicleService.findById(entryRegistration.getVehicleId())
+                .flatMap(vehicle -> userService.findById(vehicle.getUser().getId())
+                        .map(user -> EntryRegistrationDetail.builder()
+                                .entryRegistration(entryRegistration)
+                                .vehicle(vehicle)
+                                .user(user)
+                                .build()
+                        )
+                );
+    }
+
 }

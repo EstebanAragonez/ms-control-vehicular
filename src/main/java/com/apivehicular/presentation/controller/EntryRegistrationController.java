@@ -4,6 +4,7 @@ import com.apivehicular.domain.model.EntryRegistration;
 import com.apivehicular.domain.service.EntryRegistrationService;
 import com.apivehicular.presentation.dto.request.EntryRegistrationPlateRequest;
 import com.apivehicular.presentation.dto.request.EntryRegistrationRequest;
+import com.apivehicular.presentation.dto.response.EntryRegistrationDetailResponse;
 import com.apivehicular.presentation.dto.response.EntryRegistrationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,18 @@ public class EntryRegistrationController {
                 .map(this::mapToResponse);
     }
 
+    @GetMapping("/details")
+    public Flux<EntryRegistrationDetailResponse> getAllEntryRegistrationsWithDetails() {
+        return entryRegistrationService.findAllWithDetails()
+                .map(this::mapToDetailResponse);
+    }
+
+    @GetMapping("/details/today")
+    public Flux<EntryRegistrationDetailResponse> getTodayEntryRegistrationsWithDetails() {
+        return entryRegistrationService.findAllTodayWithDetails()
+                .map(this::mapToDetailResponse);
+    }
+
     private EntryRegistration mapToModel(EntryRegistrationRequest request) {
         return EntryRegistration.builder()
                 .dateTimeEntry(LocalDateTime.parse(request.getDateTimeEntry()))
@@ -89,6 +102,25 @@ public class EntryRegistrationController {
                 .dateTimeDeparture(entryRegistration.getDateTimeDeparture() != null ? entryRegistration.getDateTimeDeparture().toString() : null) // Convierte LocalDateTime a cadena
                 .observations(entryRegistration.getObservations())
                 .vehicleId(entryRegistration.getVehicleId())
+                .build();
+    }
+
+    private EntryRegistrationDetailResponse mapToDetailResponse(com.apivehicular.domain.model.EntryRegistrationDetail detail) {
+        return EntryRegistrationDetailResponse.builder()
+                .id(detail.getEntryRegistration().getId())
+                .dateTimeEntry(detail.getEntryRegistration().getDateTimeEntry().toString())
+                .dateTimeDeparture(detail.getEntryRegistration().getDateTimeDeparture() != null ?
+                        detail.getEntryRegistration().getDateTimeDeparture().toString() : null)
+                .observations(detail.getEntryRegistration().getObservations())
+                .vehicleId(detail.getVehicle().getId())
+                .vehiclePlate(detail.getVehicle().getPlate())
+                .vehicleModel(detail.getVehicle().getModel())
+                .vehicleBrand(detail.getVehicle().getTrademark())
+                .vehicleColor(detail.getVehicle().getColor())
+                .userId(detail.getUser().getId())
+                .userName(detail.getUser().getName())
+                .userEmail(detail.getUser().getEmail())
+                .userDocumentNumber(detail.getUser().getCedula())
                 .build();
     }
 }

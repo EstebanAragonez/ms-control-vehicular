@@ -14,7 +14,9 @@ public interface R2dbcEntryRegistrationRepository extends R2dbcRepository<EntryR
     Flux<EntryRegistrationEntity> findByVehicleId(Long vehicleId);
 
     @Query("SELECT * FROM entry_registration WHERE date_time_entry BETWEEN :start AND :end")
-    Flux<EntryRegistrationEntity> findByDateTimeEntryBetween(LocalDateTime start, LocalDateTime end);
+    Flux<EntryRegistrationEntity> findByDateTimeEntryBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
     @Query("""
     SELECT * FROM entry_registration 
@@ -22,7 +24,7 @@ public interface R2dbcEntryRegistrationRepository extends R2dbcRepository<EntryR
     AND date_time_entry BETWEEN :start AND :end
     ORDER BY date_time_entry DESC 
     LIMIT 1
-""")
+    """)
     Mono<EntryRegistrationEntity> findLatestByVehicleIdAndDateRange(
             @Param("vehicleId") Long vehicleId,
             @Param("start") LocalDateTime start,
