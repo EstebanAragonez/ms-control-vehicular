@@ -6,7 +6,6 @@ import com.apivehicular.domain.service.UserService;
 import com.apivehicular.presentation.dto.request.UserRequest;
 import com.apivehicular.presentation.dto.request.UserWithVehiclesRequest;
 import com.apivehicular.presentation.dto.response.UserResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
